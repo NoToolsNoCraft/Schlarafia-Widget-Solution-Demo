@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitajte Nas Panel</title>
+    <style>
+        /* General body and typography styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 50px 20px;
+        }
+
+        h1, h2 {
+            color: #2C3E50;
+            font-weight: 600;
+        }
+
+        p {
+            color: #555;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .hero h1 {
+            font-size: 44px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #666;
+        }
+
+        /* Content Blocks and Sections */
+        .content-section {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+        }
+
+        .content-section h2 {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .blocks-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .block {
+            background-color: #F8F8F8;
+            border-radius: 10px;
+            padding: 30px;
+            flex: 1 1 280px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        
+        .block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-container {
+            width: 60px;
+            height: 60px;
+            background-color: #2C3E50;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .icon-container svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+        
+        .block h3 {
+            font-size: 22px;
+            color: #2C3E50;
+            margin-top: 0;
+        }
+
+        /* Call to action section styling */
+        .cta-section {
+            text-align: center;
+            padding: 60px 0;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .cta-section h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: #666;
+        }
+        
+        .cta-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cta-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            border-radius: 50px;
+            background-color: #2C3E50;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .cta-link:hover {
+            background-color: #34495E;
+            transform: translateY(-3px);
+        }
+
+        .cta-link svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+            margin-right: 10px;
+        }
+
+        /* Sticky Button Styling */
+        .ask-button-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .ask-button {
+            background-color: #2C3E50;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 9999px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            border: 2px solid #60A5FA;
+            outline: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ask-button:hover {
+            transform: scale(1.05);
+            background-color: #34495E;
+            box-shadow: 0 0 0 4px #60A5FA, 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .ask-button-icon {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* Slide-in Panel and Overlay Styling - Mobile-first approach */
+        .panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            z-index: 1100;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            pointer-events: none;
+        }
+
+        .panel-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            padding: 40px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            pointer-events: auto;
+            overflow-y: auto;
+        }
+        
+        .panel-overlay.is-open {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .panel-overlay.is-open .panel-content {
+            transform: translateY(0);
+        }
+
+        /* Desktop specific styles */
+        @media (min-width: 769px) {
+            .panel-content {
+                width: 25%;
+                height: auto;
+                max-height: 80vh;
+                top: 50%;
+                right: 0;
+                left: auto;
+                border-top-left-radius: 15px;
+                border-bottom-left-radius: 15px;
+                transform: translate(100%, -50%);
+            }
+            
+            .panel-overlay.is-open .panel-content {
+                transform: translate(0, -50%);
+            }
+        }
+
+        /* Close Button Styling */
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #2C3E50;
+            transition: color 0.2s;
+            padding: 5px;
+        }
+
+        .close-button:hover {
+            color: #34495E;
+        }
+
+        /* Panel Text Styling */
+        .panel-headline {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2C3E50;
+            margin-bottom: 10px;
+        }
+
+        .panel-text {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        /* Form Styling */
+        .panel-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .panel-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2C3E50;
+        }
+
+        .panel-form input,
+        .panel-form select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .panel-form input:focus,
+        .panel-form select:focus {
+            outline: none;
+            border-color: #34495E;
+            box-shadow: 0 0 0 2px rgba(52, 73, 94, 0.2);
+        }
+
+        .panel-form .submit-button {
+            background-color: #34495E;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .panel-form .submit-button:hover {
+            background-color: #2C3E50;
+        }
+
+        /* Validation feedback styling */
+        .form-error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Thank you message styling */
+        .thank-you-message {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main content of the landing page -->
+    <div class="container">
+        <header class="hero">
+            <h1>Povećajte Prodaju i Poverenje</h1>
+            <p>Predstavljamo pametan dodatak, razvijen isključivo za vaš sajt, koji transformiše pasivne posetioce u aktivne kupce.</p>
+        </header>
+
+        <section class="content-section">
+            <h2>Vrednost "Pitajte Nas" rešenja za Schlarafia Tim</h2>
+            <div class="blocks-container">
+                <div class="block">
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                    </div>
+                    <h3>Pronađite Savršen Dušek</h3>
+                    <p>Izbor dušeka je kompleksan proces. Naš widget pojednostavljuje putovanje vašeg kupca, nudeći personalizovanu podršku direktno na sajtu.</p>
+                </div>
+                <div class="block">
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <h3>Kvalitetni Prodajni Vodiči</h3>
+                    <p>Umesto da posetioci odlaze sa sajta, vi ih pozivate na individualni razgovor, pretvarajući ih u kvalitetne prodajne vodiče (leads).</p>
+                </div>
+                <div class="block">
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                    </div>
+                    <h3>Povećana Konverzija</h3>
+                    <p>Kada kupac dobije stručan, personalizovan savet, oseća se sigurnije u svoju odluku, što značajno povećava verovatnoću kupovine.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>Kako to Funkcioniše za Vaš Tim?</h2>
+            <p style="text-align: center; max-width: 600px; margin: auto;">Ceo proces je dizajniran da bude efikasan i personalizovan, transformišući interakciju sa korisnicima u aktivni prodajni proces.</p>
+            <div class="blocks-container" style="margin-top: 40px;">
+                <div class="block">
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V6h5.17l2 2H20v10z"/>
+                        </svg>
+                    </div>
+                    <h3>1. Filtriranje Kvalitetnih Upita</h3>
+                    <p>Posetioci samostalno unose podatke o svojim navikama spavanja i posebnim potrebama. Vi dobijate precizne informacije koje vaš tim može odmah da obradi.</p>
+                </div>
+                <div class="block">
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                        </svg>
+                    </div>
+                    <h3>2. Personalizovana Prodajna Komunikacija</h3>
+                    <p>Umesto generičkih razgovora, Schlarafia specijalisti dobijaju konkretne podatke. To im omogućava da šalju ciljane, stručne preporuke direktno na email klijenta.</p>
+                </div>
+                <div class="block">
+                    <div class="icon-container">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10zm-2-12h4v8h-4v-8zm2-6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z"/>
+                        </svg>
+                    </div>
+                    <h3>3. Efikasna Konverzija</h3>
+                    <p>Ovaj direktni, personalizovani pristup gradi poverenje i značajno skraćuje ciklus prodaje, pretvarajući zainteresovane posetioce u verne kupce.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Call to Action Section -->
+        <section class="cta-section">
+            <h2>Želite da implementirate ovo rešenje na vašem sajtu?</h2>
+            <p>Kontaktirajte me direktno da razgovaramo o tome kako ovo rešenje može da unapredi vaše poslovanje i poveća angažovanost klijenata.</p>
+            <div class="cta-links">
+                <a href="mailto:notoolsnocraft@gmail.com" class="cta-link">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/>
+                    </svg>
+                    Pošaljite email
+                </a>
+                <a href="https://www.linkedin.com/in/petar-skrbic/" target="_blank" class="cta-link">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zm-5 13h2v-5h3V9h-3V8c0-1.2 1.22-2 2-2h1V3h-3c-3.13 0-5 2.16-5 5.5V9H7v2h3v5h2v-5c0-1.1.9-2 2-2s2 .9 2 2v5zM7 16V9h-2v7h2zM5 8a.99.99 0 0 1 1-1h1v2H5V8z"/>
+                    </svg>
+                    Moj LinkedIn
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Sticky Button -->
+    <div class="ask-button-container">
+        <button id="ask-us-button" class="ask-button">
+            <svg class="ask-button-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+            </svg>
+            Pitajte nas
+        </button>
+    </div>
+
+    <!-- Slide-in Panel with Overlay -->
+    <div id="ask-us-panel" class="panel-overlay">
+        <div class="panel-content">
+            <button id="close-panel-button" class="close-button">&times;</button>
+
+            <!-- Main container for panel content that can be swapped -->
+            <div id="panel-body">
+                <!-- Initial content: the form -->
+                <div id="form-container">
+                    <h2 class="panel-headline">Niste sigurni koji dušek je pravi za vas?</h2>
+                    <p class="panel-text">Popunite kratki upitnik ili nas kontaktirajte direktno – naš tim će vam pomoći pri izboru.</p>
+                    
+                    <form id="contact-form" class="panel-form">
+                        <div class="form-group">
+                            <label for="sleeping-position">Kako spavate?</label>
+                            <select id="sleeping-position">
+                                <option value="Na leđima">Na leđima</option>
+                                <option value="Na stomaku">Na stomaku</option>
+                                <option value="Na boku">Na boku</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="special-needs">Specijalne potrebe ili problemi sa spavanjem</label>
+                            <input type="text" id="special-needs" placeholder="Npr. bolovi u leđima, alergije...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email-address">Vaša email adresa</label>
+                            <input type="email" id="email-address" placeholder="vas.email@primer.com" required>
+                            <div id="email-error" class="form-error" style="display: none;">Molimo unesite validnu email adresu.</div>
+                        </div>
+                        
+                        <button type="submit" class="submit-button">Pošalji</button>
+                    </form>
+                </div>
+
+                <!-- Content to show after successful form submission -->
+                <div id="thank-you-message" class="thank-you-message" style="display: none;">
+                    <h2 class="panel-headline">Hvala! Vaš zahtev je poslat.</h2>
+                    <p class="panel-text">Primićete personalizovanu sugestiju u najkraćem mogućem roku.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const askButton = document.getElementById('ask-us-button');
+            const panelOverlay = document.getElementById('ask-us-panel');
+            const closeButton = document.getElementById('close-panel-button');
+            const formContainer = document.getElementById('form-container');
+            const thankYouMessage = document.getElementById('thank-you-message');
+            const contactForm = document.getElementById('contact-form');
+            const emailInput = document.getElementById('email-address');
+            const emailError = document.getElementById('email-error');
+
+            const openPanel = () => {
+                panelOverlay.classList.add('is-open');
+                formContainer.style.display = 'block';
+                thankYouMessage.style.display = 'none';
+            };
+
+            const closePanel = () => {
+                panelOverlay.classList.remove('is-open');
+                contactForm.reset();
+                emailError.style.display = 'none';
+                formContainer.style.display = 'block';
+                thankYouMessage.style.display = 'none';
+            };
+
+            askButton.addEventListener('click', openPanel);
+            closeButton.addEventListener('click', closePanel);
+
+            panelOverlay.addEventListener('click', (event) => {
+                if (event.target === panelOverlay) {
+                    closePanel();
+                }
+            });
+
+            contactForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+                const emailValue = emailInput.value.trim();
+
+                if (emailValue === '' || !emailPattern.test(emailValue)) {
+                    emailError.style.display = 'block';
+                } else {
+                    emailError.style.display = 'none';
+                    
+                    console.log('Form submitted successfully!');
+                    console.log('Sleeping position:', document.getElementById('sleeping-position').value);
+                    console.log('Special needs:', document.getElementById('special-needs').value);
+                    console.log('Email:', emailValue);
+                    
+                    formContainer.style.display = 'none';
+                    thankYouMessage.style.display = 'block';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
